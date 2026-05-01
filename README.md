@@ -49,7 +49,7 @@ After install, the binary is at `node_modules/.bin/nodegraph-analyzer-markdown`.
 
 ## Status
 
-**Slice 0b-α (package skeleton).** This release is a publish-ready empty shell — `package.json`, build pipeline, README, LICENSE, but the analyzer implementation is pending. Slice 0b-β will land the working analyzer.
+**Slice 0b-β (analyzer implemented).** The analyzer walks markdown via `unified` + `remark-parse` + `remark-gfm` + `remark-frontmatter` and produces standard `AnalyzerArtifact` output. Hand-crafted fixture tests cover frontmatter (well-formed and malformed), multi-level section hierarchy, code blocks with language metadata, GFM tables, link/image edges with source locations, and HTML-comment adjacency rules. Slice 1 (bds-v3 cutover) is a separate workstream.
 
 ## License
 
