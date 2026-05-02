@@ -47,9 +47,13 @@ After install, the binary is at `node_modules/.bin/nodegraph-analyzer-markdown`.
 }
 ```
 
-## Status
+## Status — 0.2.0
 
-**Slice 0b-β (analyzer implemented).** The analyzer walks markdown via `unified` + `remark-parse` + `remark-gfm` + `remark-frontmatter` and produces standard `AnalyzerArtifact` output. Hand-crafted fixture tests cover frontmatter (well-formed and malformed), multi-level section hierarchy, code blocks with language metadata, GFM tables, link/image edges with source locations, and HTML-comment adjacency rules. Slice 1 (bds-v3 cutover) is a separate workstream.
+The analyzer walks markdown via `unified` + `remark-parse` + `remark-gfm` + `remark-frontmatter` and produces standard `AnalyzerArtifact` output. Slice 1 cutover (uniform NDJSON contract across the analyzer family) shipped; the package is the production markdown analyzer for the `nodegraph-analysis` ecosystem.
+
+Hand-crafted fixture tests cover frontmatter (well-formed and malformed), multi-level section hierarchy, code blocks with language metadata, GFM tables, link/image edges with source locations, and HTML-comment adjacency rules.
+
+Markdown is structural-only by design (per architecture §7) — no per-method scalars or class-shape facets, since markdown isn't an OO language. Engine derivations that read those fields silently skip markdown elements. Cross-language coupling derivations (e.g., a TS file referencing a markdown doc) work via the standard `references` edges.
 
 ## License
 
