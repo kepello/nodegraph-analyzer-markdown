@@ -1,6 +1,6 @@
 {
   "name": "@kepello/nodegraph-analyzer-markdown",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Markdown analyzer subprocess for @kepello/nodegraph-analysis. Walks markdown via remark and emits structural elements (sections, code blocks, tables), cross-document link edges, frontmatter, and HTML comments adjacent to headings.",
   "type": "module",
   "main": "dist/index.js",
@@ -28,7 +28,7 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "@kepello/nodegraph-analysis": "^0.4.0"
+    "@kepello/nodegraph-analysis": "^0.9.0"
   },
   "dependencies": {
     "github-slugger": "^2.0.0",

@@ -2,6 +2,10 @@
 
 All notable changes to `@kepello/nodegraph-analyzer-markdown`. Reconstructed from git history; format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.2.1] — 2026-05-02
+
+- Peer-bump to engine `^0.9.0`. No analyzer-side behaviour change; sync release alongside HTML / CSS / TS / .NET / Swift coordinated publish.
+
 ## [0.2.0] — 2026-05-01
 
 - Declare compatibility with the 0.4.0 wire contract (`AnalyzerObservation` shape).
