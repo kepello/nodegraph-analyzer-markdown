@@ -7,18 +7,18 @@
  * `@kepello/nodegraph-analysis/protocol`.
  *
  * Mirrors the conventions of `@kepello/nodegraph-analyzer-typescript`'s
- * CLI: `--path` is required; `--include` / `--exclude` are simple
- * substring filters (the host orchestrator does the proper glob work
- * before passing patterns through, so simple substring matching here
- * is enough to compose).
+ * CLI: `--path` is required; `--include` / `--exclude` are glob
+ * patterns evaluated by `matchesGlobs` from the protocol subpath
+ * (basename mode for slashless patterns, full-path mode otherwise).
  */
 
 import { readFileSync, readdirSync, realpathSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import type {
-  AnalysisMode,
-  AnalyzerMessage,
+import {
+  matchesGlobs,
+  type AnalysisMode,
+  type AnalyzerMessage,
 } from "@kepello/nodegraph-analysis/protocol";
 import { analyzeMarkdown } from "./analyze.js";
 
@@ -67,22 +67,6 @@ function parseArgs(argv: string[]): Args {
 const MARKDOWN_EXTENSIONS = new Set([".md", ".markdown"]);
 const SKIP_DIRS = new Set(["node_modules", ".git", "dist", ".next", ".cache"]);
 
-function matchesFilter(filePath: string, include: string[], exclude: string[]): boolean {
-  if (exclude.length > 0) {
-    for (const pattern of exclude) {
-      if (filePath.includes(pattern.replace(/\*\*/g, "").replace(/\*/g, ""))) {
-        return false;
-      }
-    }
-  }
-  if (include.length > 0) {
-    return include.some((pattern) =>
-      filePath.includes(pattern.replace(/\*\*/g, "").replace(/\*/g, "")),
-    );
-  }
-  return true;
-}
-
 function discoverFiles(dir: string, include: string[], exclude: string[]): string[] {
   const results: string[] = [];
   function walk(currentDir: string): void {
@@ -105,7 +89,7 @@ function discoverFiles(dir: string, include: string[], exclude: string[]): strin
         walk(fullPath);
       } else if (MARKDOWN_EXTENSIONS.has(extname(entry).toLowerCase())) {
         const relPath = relative(dir, fullPath);
-        if (matchesFilter(relPath, include, exclude)) {
+        if (matchesGlobs(relPath, include, exclude)) {
           results.push(fullPath);
         }
       }

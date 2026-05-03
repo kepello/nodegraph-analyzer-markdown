@@ -2,6 +2,10 @@
 
 All notable changes to `@kepello/nodegraph-analyzer-markdown`. Reconstructed from git history; format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.2.4] — 2026-05-02
+
+- Fix: CLI's `--include` / `--exclude` filters now use real glob semantics via the shared `matchesGlobs` helper from `@kepello/nodegraph-analysis/protocol` (peer-bumped to `^0.10.1`). Removes the in-tree `matchesFilter` that stripped `*` / `**` and did substring matching — `--exclude *.test.ts` no longer also drops `my.test.tsx`. Stale comment about "simple substring filters" in the CLI header was also updated.
+
 ## [0.2.3] — 2026-05-02
 
 - Peer-bump to engine `^0.10.0` (engine trimmed its main barrel; engine internals moved to the `/engine` subpath). No analyzer-side behaviour change; sync release alongside HTML / CSS / TS / .NET / Swift coordinated publish.
