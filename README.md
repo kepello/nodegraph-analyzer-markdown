@@ -47,7 +47,7 @@ After install, the binary is at `node_modules/.bin/nodegraph-analyzer-markdown`.
 }
 ```
 
-## Status — 0.2.0
+## Status
 
 The analyzer walks markdown via `unified` + `remark-parse` + `remark-gfm` + `remark-frontmatter` and produces standard `AnalyzerArtifact` output. Slice 1 cutover (uniform NDJSON contract across the analyzer family) shipped; the package is the production markdown analyzer for the `nodegraph-analysis` ecosystem.
 
