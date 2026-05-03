@@ -38,6 +38,5 @@ export function buildCodeBlockElement(
     contentHash: computeContentHash(content),
     metadata,
     content,
-    edges: [],
   };
 }

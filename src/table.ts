@@ -49,6 +49,5 @@ export function buildTableElement(
     sourceLocation,
     contentHash: computeContentHash(verbatim),
     metadata,
-    edges: [],
   };
 }

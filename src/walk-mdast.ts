@@ -170,7 +170,6 @@ function processHeading(
       slug,
     },
     ...(leading ? { leadingComment: leading } : {}),
-    edges: [],
   };
 
   return {
@@ -225,7 +224,7 @@ function attachContains(
 ): void {
   const parent = stack[stack.length - 1];
   if (parent) {
-    parent.element.edges!.push({ type: "contains", targetName: childName });
+    (parent.element.edges ??= []).push({ type: "contains", targetName: childName });
   } else {
     artifactEdges.push({ type: "contains", targetName: childName });
   }
@@ -251,7 +250,7 @@ function attachInlineEdgesToActiveSection(
     const key = `${edge.subtype}::${edge.targetName}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    parent.element.edges!.push(edge);
+    (parent.element.edges ??= []).push(edge);
   }
 }
 
