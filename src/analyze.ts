@@ -25,11 +25,23 @@ import {
 import { extractFrontmatter } from "./frontmatter.js";
 import { walkMdast } from "./walk-mdast.js";
 
+/**
+ * Result of analyzing one markdown file. `artifact` is always present
+ * (markdown parsing is total — even malformed input produces a
+ * well-formed artifact carrying just the file element). `problems`
+ * lists frontmatter-parse warnings and walk-time anomalies; on
+ * success it shares its reference with `artifact.problems`.
+ */
 export interface AnalyzeResult {
   artifact: AnalyzerArtifact;
   problems: Problem[];
 }
 
+/**
+ * Per-file metadata attached to the artifact. `frontmatter` is the
+ * parsed YAML object when the document opens with `---`-delimited
+ * frontmatter; `title` is the text of the first H1 heading found.
+ */
 export interface ArtifactMetadata {
   frontmatter?: Record<string, unknown>;
   title?: string;
@@ -40,6 +52,14 @@ const processor = unified()
   .use(remarkGfm)
   .use(remarkFrontmatter, ["yaml"]);
 
+/**
+ * Analyze one markdown file and produce an `AnalyzerArtifact`.
+ * Parses frontmatter (if present), walks the mdast tree to extract
+ * `section` / `code-block` / `table` elements with `contains` /
+ * `references` edges, and returns `{ artifact, problems }`. Pure with
+ * respect to its input string — no I/O — so it can be invoked
+ * directly as a library function.
+ */
 export function analyzeMarkdown(filePath: string, content: string): AnalyzeResult {
   const tree = processor.parse(content) as Root;
 

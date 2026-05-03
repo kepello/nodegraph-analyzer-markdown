@@ -16,6 +16,12 @@ import {
 } from "@kepello/nodegraph-analysis/protocol";
 import type { Table } from "mdast";
 
+/**
+ * Metadata attached to `table` elements. `rowCount` includes the
+ * header row (mdast places the header at index 0 with body rows at
+ * 1..n). `columnCount` comes from the table's `align` array if
+ * present, otherwise from the header row's cell count.
+ */
 export interface TableMetadata {
   columnCount: number;
   rowCount: number;

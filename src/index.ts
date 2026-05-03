@@ -10,5 +10,3 @@ export { analyzeMarkdown } from "./analyze.js";
 export type { AnalyzeResult, ArtifactMetadata } from "./analyze.js";
 export type { CodeBlockMetadata } from "./code-block.js";
 export type { TableMetadata } from "./table.js";
-
-export const PACKAGE_VERSION = "0.1.0";

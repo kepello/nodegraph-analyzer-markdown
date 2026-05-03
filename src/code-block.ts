@@ -14,6 +14,12 @@ import {
 } from "@kepello/nodegraph-analysis/protocol";
 import type { Code } from "mdast";
 
+/**
+ * Metadata attached to `code-block` elements. `language` is the lang
+ * token from the fence (e.g., `ts`, `python`); `info` is the rest of
+ * the info string after the lang token (e.g., `{title="example.ts"}`).
+ * Both omitted when absent in the source.
+ */
 export interface CodeBlockMetadata {
   language?: string;
   info?: string;
