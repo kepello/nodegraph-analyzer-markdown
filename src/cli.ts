@@ -28,20 +28,24 @@ function log(msg: string): void {
 
 interface Args {
   path: string;
+  discover: boolean;
 }
 
 function parseArgs(argv: string[]): Args {
   let path = "";
+  let discover = false;
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--path" && i + 1 < argv.length) {
       path = argv[++i]!;
+    } else if (argv[i] === "--discover") {
+      discover = true;
     }
   }
   if (!path) {
     log("Error: --path <repo-root> is required");
     process.exit(1);
   }
-  return { path };
+  return { path, discover };
 }
 
 const MARKDOWN_EXTENSIONS = new Set([".md", ".markdown"]);
@@ -71,6 +75,12 @@ async function main(): Promise<void> {
     exclude: config.exclude,
     lowercaseExtensions: true,
   });
+
+  if (args.discover) {
+    for (const filePath of files) process.stdout.write(filePath + "\n");
+    return;
+  }
+
   log(`nodegraph-analyzer-markdown: found ${files.length} markdown files`);
 
   let elementsEmitted = 0;
