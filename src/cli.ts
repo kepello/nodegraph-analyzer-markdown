@@ -2,22 +2,17 @@
 /**
  * Subprocess entry point for `@kepello/nodegraph-analyzer-markdown`.
  *
- * Discovers `.md` and `.markdown` files matching the supplied filter,
- * runs the analyzer per file, and emits NDJSON to stdout per
- * `@kepello/nodegraph-analysis/protocol`.
- *
- * Mirrors the conventions of `@kepello/nodegraph-analyzer-typescript`'s
- * CLI: `--path` is required; `--include` / `--exclude` are glob
- * patterns evaluated by `matchesGlobs` from the protocol subpath
- * (basename mode for slashless patterns, full-path mode otherwise).
+ * Spawned by the orchestrator with exactly `--path <repoRoot>`. All
+ * other tuning lives in `<repoRoot>/nodegraph-analyzer-markdown.config.json`
+ * (optional; sensible defaults when absent).
  */
 
-import { readFileSync, readdirSync, realpathSync, statSync } from "node:fs";
-import { extname, join, relative } from "node:path";
+import { readFileSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
-  matchesGlobs,
-  type AnalysisMode,
+  discoverFilesByExtension,
+  loadAnalyzerConfig,
+  type AnalyzerConfig,
   type AnalyzerMessage,
 } from "@kepello/nodegraph-analysis/protocol";
 import { analyzeMarkdown } from "./analyze.js";
@@ -32,80 +27,50 @@ function log(msg: string): void {
 
 interface Args {
   path: string;
-  mode: AnalysisMode;
-  include: string[];
-  exclude: string[];
 }
 
 function parseArgs(argv: string[]): Args {
   let path = "";
-  let mode: AnalysisMode = "structure";
-  const include: string[] = [];
-  const exclude: string[] = [];
-
   for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    if (arg === "--path" && i + 1 < argv.length) {
+    if (argv[i] === "--path" && i + 1 < argv.length) {
       path = argv[++i]!;
-    } else if (arg === "--mode" && i + 1 < argv.length) {
-      const m = argv[++i]!;
-      if (m === "identity" || m === "structure" || m === "full") mode = m;
-    } else if (arg === "--include" && i + 1 < argv.length) {
-      include.push(argv[++i]!);
-    } else if (arg === "--exclude" && i + 1 < argv.length) {
-      exclude.push(argv[++i]!);
     }
   }
-
   if (!path) {
     log("Error: --path <repo-root> is required");
     process.exit(1);
   }
-  return { path, mode, include, exclude };
+  return { path };
 }
 
 const MARKDOWN_EXTENSIONS = new Set([".md", ".markdown"]);
-const SKIP_DIRS = new Set(["node_modules", ".git", "dist", ".next", ".cache"]);
 
-function discoverFiles(dir: string, include: string[], exclude: string[]): string[] {
-  const results: string[] = [];
-  function walk(currentDir: string): void {
-    let entries: string[];
-    try {
-      entries = readdirSync(currentDir);
-    } catch {
-      return;
-    }
-    for (const entry of entries) {
-      if (SKIP_DIRS.has(entry)) continue;
-      const fullPath = join(currentDir, entry);
-      let stat;
-      try {
-        stat = statSync(fullPath);
-      } catch {
-        continue;
-      }
-      if (stat.isDirectory()) {
-        walk(fullPath);
-      } else if (MARKDOWN_EXTENSIONS.has(extname(entry).toLowerCase())) {
-        const relPath = relative(dir, fullPath);
-        if (matchesGlobs(relPath, include, exclude)) {
-          results.push(fullPath);
-        }
-      }
-    }
-  }
-  walk(dir);
-  return results;
-}
+const DEFAULT_CONFIG: AnalyzerConfig = {
+  include: [],
+  exclude: [],
+  // The markdown analyzer always emits its leading-comment block (HTML
+  // comments adjacent to headings carry semantic content for governance
+  // consumers). includeComments here would only gate verbatim element
+  // source — markdown elements don't carry that today.
+  includeComments: false,
+};
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  const startTime = Date.now();
-  const files = discoverFiles(args.path, args.include, args.exclude);
-  log(
-    `nodegraph-analyzer-markdown: mode=${args.mode}, found ${files.length} markdown files`,
+  const config = loadAnalyzerConfig(
+    args.path,
+    "nodegraph-analyzer-markdown",
+    DEFAULT_CONFIG,
   );
+  const startTime = Date.now();
+  const files = discoverFilesByExtension({
+    repoRoot: args.path,
+    extensions: MARKDOWN_EXTENSIONS,
+    include: config.include,
+    exclude: config.exclude,
+    lowercaseExtensions: true,
+  });
+  log(`nodegraph-analyzer-markdown: found ${files.length} markdown files`);
 
   let elementsEmitted = 0;
   for (const filePath of files) {

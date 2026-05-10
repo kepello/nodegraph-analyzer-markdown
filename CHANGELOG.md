@@ -2,6 +2,23 @@
 
 All notable changes to `@kepello/nodegraph-analyzer-markdown`. Reconstructed from git history; format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3.0] — 2026-05-10
+
+Protocol-breaking refactor coordinated with `@kepello/nodegraph-analysis@0.17.0` (Fathom work-md row 2.7.4, decisions 1–10 in [.agents/plans/analysis-refactor.md](../../.agents/plans/analysis-refactor.md)).
+
+### Removed
+
+- **`--mode` / `--include` / `--exclude` CLI flags** — orchestrator no longer passes any. Per-analyzer tuning lives in `<repoRoot>/nodegraph-analyzer-markdown.config.json` (`{ include?, exclude?, includeComments? }`).
+
+### Added
+
+- Reads `<repoRoot>/nodegraph-analyzer-markdown.config.json` via `loadAnalyzerConfig` from `@kepello/nodegraph-analysis/protocol`. Universal skip-dirs baked into the file-walk via `discoverFilesByExtension`.
+
+### Changed
+
+- CLI invocation contract: `nodegraph-analyzer-markdown --path <repoRoot>`.
+- Peer-dep on `@kepello/nodegraph-analysis` bumped to `^0.17.0`.
+
 ## [0.2.4] — 2026-05-02
 
 - Fix: CLI's `--include` / `--exclude` filters now use real glob semantics via the shared `matchesGlobs` helper from `@kepello/nodegraph-analysis/protocol` (peer-bumped to `^0.10.1`). Removes the in-tree `matchesFilter` that stripped `*` / `**` and did substring matching — `--exclude *.test.ts` no longer also drops `my.test.tsx`. Stale comment about "simple substring filters" in the CLI header was also updated.
