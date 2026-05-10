@@ -2,6 +2,12 @@
 
 All notable changes to `@kepello/nodegraph-analyzer-markdown`. Reconstructed from git history; format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3.1] — 2026-05-10
+
+Defensive backstop (Fathom work-md row 2.2.18). Strictly additive; peer-dep relax only.
+
+NDJSON emit boundary now wraps the artifact with `dedupeArtifactEdges` from `@kepello/nodegraph-analysis/protocol@0.18.1` — collapses any per-source edge list to one edge per `(type, targetName)`, matching the substrate's `edges_live_unique_*` UNIQUE invariant. Markdown emits link-target edges that could plausibly hit the trap (a section with multiple links to the same target, varying by relative-vs-absolute form, would emit two edges with same `(targetName, type="links-to")` and could differ by subtype if subtype carries the link kind). Peer-dep on `@kepello/nodegraph-analysis` bumped to `^0.18.1`.
+
 ## [0.3.0] — 2026-05-10
 
 Protocol-breaking refactor coordinated with `@kepello/nodegraph-analysis@0.17.0` (Fathom work-md row 2.7.4, decisions 1–10 in [.agents/plans/analysis-refactor.md](../../.agents/plans/analysis-refactor.md)).

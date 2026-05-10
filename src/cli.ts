@@ -10,6 +10,7 @@
 import { readFileSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
+  dedupeArtifactEdges,
   discoverFilesByExtension,
   loadAnalyzerConfig,
   type AnalyzerConfig,
@@ -84,7 +85,7 @@ async function main(): Promise<void> {
 
     try {
       const result = analyzeMarkdown(filePath, content);
-      emit({ type: "artifact", artifact: result.artifact });
+      emit({ type: "artifact", artifact: dedupeArtifactEdges(result.artifact) });
       elementsEmitted += result.artifact.elements.length;
     } catch (err) {
       emit({ type: "error", message: `Analyzer error: ${err}`, filePath });
