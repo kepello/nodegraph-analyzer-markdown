@@ -2,9 +2,10 @@
 /**
  * Subprocess entry point for `@kepello/nodegraph-analyzer-markdown`.
  *
- * Spawned by the orchestrator with exactly `--path <repoRoot>`. All
- * other tuning lives in `<repoRoot>/nodegraph-analyzer-markdown.config.json`
- * (optional; sensible defaults when absent).
+ * Spawned by the orchestrator with `--path <repoRoot>` and the entry's
+ * config slice piped to stdin (JSON, EOF-terminated). The analyzer reads
+ * stdin, parses, and uses the values for file discovery + tuning. No
+ * filesystem IO for config.
  */
 
 import { readFileSync, realpathSync } from "node:fs";
@@ -12,8 +13,7 @@ import { fileURLToPath } from "node:url";
 import {
   dedupeArtifactEdges,
   discoverFilesByExtension,
-  loadAnalyzerConfig,
-  type AnalyzerConfig,
+  readAnalyzerConfigFromStdin,
   type AnalyzerMessage,
 } from "@kepello/nodegraph-analysis/protocol";
 import { analyzeMarkdown } from "./analyze.js";
@@ -50,23 +50,9 @@ function parseArgs(argv: string[]): Args {
 
 const MARKDOWN_EXTENSIONS = new Set([".md", ".markdown"]);
 
-const DEFAULT_CONFIG: AnalyzerConfig = {
-  include: [],
-  exclude: [],
-  // The markdown analyzer always emits its leading-comment block (HTML
-  // comments adjacent to headings carry semantic content for governance
-  // consumers). includeComments here would only gate verbatim element
-  // source — markdown elements don't carry that today.
-  includeComments: false,
-};
-
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  const config = loadAnalyzerConfig(
-    args.path,
-    "nodegraph-analyzer-markdown",
-    DEFAULT_CONFIG,
-  );
+  const config = await readAnalyzerConfigFromStdin();
   const startTime = Date.now();
   const files = discoverFilesByExtension({
     repoRoot: args.path,
