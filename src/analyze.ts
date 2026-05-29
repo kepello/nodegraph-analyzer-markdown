@@ -79,7 +79,7 @@ export function analyzeMarkdown(filePath: string, content: string): AnalyzeResul
     id: filePath,
     filePath,
     language: "markdown",
-    contentHash: computeContentHash(content),
+    sourceHash: computeContentHash(content),
     metadata,
     elements: walkResult.elements,
     edges: walkResult.artifactEdges,

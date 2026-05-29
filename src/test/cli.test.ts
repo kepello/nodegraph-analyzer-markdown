@@ -32,6 +32,9 @@ test("cli — runs as subprocess and emits valid NDJSON", () => {
 
   const result = spawnSync(process.execPath, [CLI_DIST, "--path", FIXTURES], {
     encoding: "utf-8",
+    // Analyzer reads config from stdin; pipe an empty config so file
+    // discovery uses defaults (empty stdin throws "config not provided").
+    input: JSON.stringify({}),
   });
   assert.equal(result.status, 0, `CLI exited non-zero: ${result.stderr}`);
 
@@ -64,7 +67,7 @@ test("cli — runs as subprocess and emits valid NDJSON", () => {
       assert.ok(el.name);
       assert.ok(el.kind);
       assert.ok(el.sourceLocation);
-      assert.ok(el.contentHash);
+      assert.ok(el.sourceHash);
     }
   }
 });

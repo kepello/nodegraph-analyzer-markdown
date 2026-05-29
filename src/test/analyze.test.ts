@@ -204,13 +204,13 @@ test("code-and-tables — language, info, columnCount, rowCount", () => {
 test("artifact — top-level shape, language, hashes, source locations", () => {
   const { artifact } = load("hierarchy.md");
   assert.equal(artifact.language, "markdown");
-  assert.ok(artifact.contentHash);
-  assert.match(artifact.contentHash!, /^[a-f0-9]{64}$/);
+  assert.ok(artifact.sourceHash);
+  assert.match(artifact.sourceHash!, /^[a-f0-9]{64}$/);
   for (const el of artifact.elements) {
     assert.ok(el.sourceLocation, `${el.name} missing sourceLocation`);
     assert.ok(el.sourceLocation.startLine >= 1);
     assert.ok(el.sourceLocation.endLine >= el.sourceLocation.startLine);
-    assert.ok(el.contentHash, `${el.name} missing contentHash`);
+    assert.ok(el.sourceHash, `${el.name} missing sourceHash`);
   }
 });
 

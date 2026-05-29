@@ -163,7 +163,7 @@ function processHeading(
     kind: "section",
     ...(parent ? { parentName: parent.element.name } : {}),
     sourceLocation: nodePosition(node),
-    contentHash: computeContentHash(`h${node.depth}:${headingText}`),
+    sourceHash: computeContentHash(`h${node.depth}:${headingText}`),
     metadata: {
       headingLevel: node.depth,
       headingText,

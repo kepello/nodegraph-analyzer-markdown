@@ -2,6 +2,10 @@
 
 All notable changes to `@kepello/nodegraph-analyzer-markdown`. Reconstructed from git history; format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.6.0] — 2026-05-28
+
+Two-hash adoption (Fathom row 1.12.5): emit `sourceHash` (renamed from `contentHash`) on every artifact/element — it always held a source hash. The overlay composes the substrate `contentHash` from it, so an analyzer-rule change that doesn't touch source still re-tips. Peer dep on `@kepello/nodegraph-analysis` retargeted to `^3.0.0`.
+
 ## [0.5.0] — 2026-05-14
 
 **Breaking — analyzer-config-consolidation (Fathom work row 0.1.2).** Reads its config slice from stdin (UTF-8 JSON, EOF-terminated) instead of `<repoRoot>/nodegraph-analyzer-<name>.config.json`. Imported helper `loadAnalyzerConfig` (gone from `@kepello/nodegraph-analysis/protocol`) replaced by `readAnalyzerConfigFromStdin()`. Per-analyzer config files at workspace root are no longer read — operators must move `include` / `exclude` / `includeComments` into the workspace `.fathom/fathom.config.json` under `analyzers.<name>` and delete the standalone file.

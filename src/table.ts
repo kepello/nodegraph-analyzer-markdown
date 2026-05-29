@@ -53,7 +53,7 @@ export function buildTableElement(
     kind: "table",
     ...(parentName !== undefined ? { parentName } : {}),
     sourceLocation,
-    contentHash: computeContentHash(verbatim),
+    sourceHash: computeContentHash(verbatim),
     metadata,
   };
 }

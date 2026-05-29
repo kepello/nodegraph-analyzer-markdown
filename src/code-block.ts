@@ -41,7 +41,7 @@ export function buildCodeBlockElement(
     kind: "code-block",
     ...(parentName !== undefined ? { parentName } : {}),
     sourceLocation,
-    contentHash: computeContentHash(content),
+    sourceHash: computeContentHash(content),
     metadata,
     content,
   };
